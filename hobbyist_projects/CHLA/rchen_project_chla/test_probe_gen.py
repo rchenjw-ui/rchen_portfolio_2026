@@ -128,7 +128,7 @@ if __name__ == "__main__":
     rb_beta_df = extract_beta_columns(data)
 
     print("Found betas in RB/WT!")
-    df = pd.read_csv("pilot_8samples_merged.csv", usecols = ["ProbeID"])
+    df = pd.read_csv("pilot_8samples_merged_s.csv", usecols = ["ProbeID"])
     sample_probes = df["ProbeID"].tolist()
 
     deltas = get_probes_deltas(rb_beta_df, retina_beta_df, sample_probes)

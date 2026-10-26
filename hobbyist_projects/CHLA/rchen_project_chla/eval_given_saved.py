@@ -136,7 +136,7 @@ probes, model, scaler = reconstruct_model("model_and_scaler_50.json")
 
 
 samples = {}
-with open("pilot_8samples_merged.csv", 'r') as file:
+with open("pilot_8samples_merged-s.csv", 'r') as file:
     #create dictionary, sample_wise probe addition
     file = file.read().splitlines()
     labels = file[0].split(",")

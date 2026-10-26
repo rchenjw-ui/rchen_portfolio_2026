@@ -135,7 +135,7 @@ def generate_ref_probes(name):
     path = name+"_probe_beta_pairs.csv"
     df = pd.read_csv(path, usecols=['probe'])
     column_list = df["probe"].tolist()
-    df = pd.read_csv("pilot_8samples_merged.csv", usecols = ["ProbeID"])
+    df = pd.read_csv("pilot_8samples_merged-s.csv", usecols = ["ProbeID"])
     probes = df["ProbeID"].tolist()
     column_list = [x for x in column_list if x in probes]
     return column_list

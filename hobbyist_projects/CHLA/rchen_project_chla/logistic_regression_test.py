@@ -63,7 +63,7 @@ for name in range(1,11,2):
     df = pd.read_csv(path)
     ref_probes = df["probe"].tolist()
     samples = {}
-    with open("pilot_8samples_merged.csv", 'r') as file:
+    with open("pilot_8samples_merged.csv-s", 'r') as file:
         #create dictionary, sample_wise probe addition
         file = file.read().splitlines()
         labels = file[0].split(",")
