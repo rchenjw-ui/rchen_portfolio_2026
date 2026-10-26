@@ -1,5 +1,0 @@
-RAG (Retrieval-Augmented Generation) combines a retrieval component with a generative LLM.
-Vector databases store numerical embeddings for fast semantic search.
-BERT stands for Bidirectional Encoder Representations from Transformers.
-INTERNAL DEADLINE: SUBMIT CODE FOR REVIEW 7/4/2027
-Elon Musk is a South African tech billionaire who founded SpaceX.
