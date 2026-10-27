@@ -75,7 +75,7 @@ def beta_df_to_sample_probe_dict(beta_df):
 
 #gets beta values for embryo
 
-def beta_values_embryonic(ref_probes, paths = ('embryo_data/GSE57362_Embryo_retinas_meth_signal_2.txt', 'embryo_data/GSE57362_Embryo_retinas_unmeth_signal_2.txt')):
+def beta_values_embryonic(ref_probes, paths = ('embryo_data/GSE57362_Embryo_retinas_meth_signal.txt', 'embryo_data/GSE57362_Embryo_retinas_unmeth_signal.txt')):
     with open(paths[0], 'r') as f:
         meth_data = f.read().strip().split('\n')
     with open(paths[1], 'r') as f:
@@ -94,7 +94,7 @@ def beta_values_embryonic(ref_probes, paths = ('embryo_data/GSE57362_Embryo_reti
 
 #gets data for tfx
 
-def beta_values_rb(ref_probes, path = 'tumor_data/GSE58783_Methylation_processed_data_2.RData'):
+def beta_values_rb(ref_probes, path = 'tumor_data/GSE58783_Methylation_processed_data.RData'):
     rdata_dict = rdata_to_dataframes_with_names(path)
     beta_df = rdata_dict.get('processed_data')
     filtered_beta_df = extract_beta_columns(beta_df, ref_probes)

@@ -119,16 +119,16 @@ if __name__ == "__main__":
     CUTOFF = 0.4 
 
 
-    meth_signals, sample_names = load_signals("embryo_data/GSE57362_Embryo_retinas_meth_signal_2.txt")
-    unmeth_signals, _ = load_signals("embryo_data/GSE57362_Embryo_retinas_Unmeth_signal_2.txt")
+    meth_signals, sample_names = load_signals("embryo_data/GSE57362_Embryo_retinas_meth_signal.txt")
+    unmeth_signals, _ = load_signals("embryo_data/GSE57362_Embryo_retinas_Unmeth_signal.txt")
     retina_beta_df = compute_beta_dataframe(meth_signals, unmeth_signals, sample_names) 
 
     # Load tumor beta DataFrame (existing code - output is probe x tumor-sample)
-    data = rdata_to_dataframe("tumor_data/GSE58783_Methylation_processed_data_2.RData")['processed_data']
+    data = rdata_to_dataframe("tumor_data/GSE58783_Methylation_processed_data.RData")['processed_data']
     rb_beta_df = extract_beta_columns(data)
 
     print("Found betas in RB/WT!")
-    df = pd.read_csv("pilot_8samples_merged_s.csv", usecols = ["ProbeID"])
+    df = pd.read_csv("pilot_8samples_merged-s.csv", usecols = ["ProbeID"])
     sample_probes = df["ProbeID"].tolist()
 
     deltas = get_probes_deltas(rb_beta_df, retina_beta_df, sample_probes)

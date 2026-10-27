@@ -43,7 +43,7 @@ def hash_chunk(text: str) -> str:
 # Embedding
 # ---------------------------------------------------------------------------
 
-_DEFAULT_EMBED_MODEL = "modernbert-embed-base-Q8_0.gguf"
+_DEFAULT_EMBED_MODEL = "models/modernbert-embed-base-Q8_0.gguf"
 
 
 def get_embedder(model_path: Optional[str] = None) -> "Llama":

@@ -3,3 +3,6 @@ CHLA/rchen_project_chla/embryo_data/** filter=lfs diff=lfs merge=lfs -text
 CHLA/rchen_project_chla/methyl_data/** filter=lfs diff=lfs merge=lfs -text
 CHLA/rchen_project_chla/tumor_data/** filter=lfs diff=lfs merge=lfs -text
 */.csv filter=lfs diff=lfs merge=lfs -text
+*.gguf filter=lfs diff=lfs merge=lfs -text
+*.RData filter=lfs diff=lfs merge=lfs -text
+*.csv filter=lfs diff=lfs merge=lfs -text

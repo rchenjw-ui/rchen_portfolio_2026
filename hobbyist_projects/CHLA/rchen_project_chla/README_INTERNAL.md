@@ -2,13 +2,13 @@ NOTE:
 
 The research code is shared with permission from my mentor at Children's Hospital Los Angeles. Two unpublished original research data files are not publicly available due to data-sharing restrictions 
 
-To demonstrate the computational workflow, this repository provides synthetic data that can be used to run the code. These dmonestration inputs are not the original data, and their outputs should not be interpreted as reproducing or validating the study findings
+To demonstrate the computational workflow, this repository provides synthetic data that can be used to run the code. These demonstration inputs are not the original data, and their outputs should not be interpreted as reproducing or validating the study findings
 
 
 BEFORE YOU USE:
-- add the files "GSE57362_Embryo_retinas_meth_signal.txt" and "GSE57362_Embryo_retinas_Unmeth_signal.txt" to directory "embryo_data"
-- add the files "GSE58783_Methylation_processed_data.RData" to directory "tumor_data"
 - Make sure you are running in Python! This is a Python program
+- eval_given_saved.py evaluates the logistic regression method on a combination of existing and synthetic data (the UM samples are synthetic, as are some evaulations for tumor fraction)
+- model_and_scaler_50.json, top_50_probes_probe_beta_pairs, and pilot_8samples_merged-s.csv (S for synthetic) are necessary for eval_given_saved.py to run out of the box
 
 Problem:
 - The problem is that retinoblastoma cannot easily be biopsied without spreading
@@ -24,7 +24,17 @@ Features:
 - Evaluates on a few known clinical samples
 - Also synthetically generates samples with known tumor fraction for evaluation
 
-Future maneuvers:
-- Better visualizations
-- More feature importance estimates
-- More data, plus clinical evaluations
+data:
+- embryo_data: retina data from embryonic sample (public)
+- methyl_data: three cleared patient samples (released by lab)
+- tumor_data: data from known retinoblastoma tumors (public)
+- model_and_scaler_50.json: the file containing the ML model for calculating tumor fraction
+- pilot_8samples_merged-s.csv: Contains two synthetic uveal melanoma plus 6 released patient samples (released by lab/synthetic)
+- top_50_probes_probe_beta_pairs.csv: a list of probes and reference values for retinoblastoma (just the ones ML model uses)
+
+code:
+- data_extraction.py: file handling utils
+- test_probe_gen.py: generates the probe sets
+- matrices_for_use: due to some heavy NumPy data processing, had to separately generate .npy files
+- logistic_regression_test.py: trains and tests models on existing data
+- eval_given_saved.py: runs a model on an evaluation suite and synthetic data 
