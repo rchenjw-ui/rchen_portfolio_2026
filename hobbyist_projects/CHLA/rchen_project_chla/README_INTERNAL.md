@@ -4,6 +4,7 @@ The research code is shared with permission from my mentor at Children's Hospita
 
 To demonstrate the computational workflow, this repository provides synthetic data that can be used to run the code. These demonstration inputs are not the original data, and their outputs should not be interpreted as reproducing or validating the study findings
 
+This is an older README.md and as such is relatively messy 
 
 BEFORE YOU USE:
 - Make sure you are running in Python! This is a Python program
