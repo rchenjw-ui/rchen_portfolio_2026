@@ -1,0 +1,13 @@
+RBM vs MLP on MNIST
+========================================
+MLP random init – final test acc: 97.08%
+MLP ← plain RBM   – final test acc: 95.41%
+MLP ← sparse RBM  – final test acc: 95.48%
+
+Note on RBM vs modern MLP
+-------------------------
+It is common for a well-optimised randomly-initialised MLP (Adam + good
+init) to beat a classic RBM stack on MNIST. RBMs were historically
+important for making deep nets trainable; with modern optimisers the
+unsupervised pre-training advantage often shrinks or disappears on
+simple datasets. The comparison is kept intentional and honest.
