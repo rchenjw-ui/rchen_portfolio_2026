@@ -3,7 +3,7 @@ MIT Maker Portfolio (code)
 
 Files all located in `hobbyist_projects/` , added via copying (with necessary edits to make code runnable) from my previous and present work, either in Google Colab notebooks, my local machine, or my hobby and for-work GitHub code repositories (where you can see the checkin history)
 
-Folders:
+Folders: 
 
 
 ## Folders
