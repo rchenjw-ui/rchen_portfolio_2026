@@ -16,6 +16,8 @@ class VAEModel(nn.Module):
 
     """
     Original design, revised as far too small 
+
+    NOTE: Before this experience I routinely made the models way too small.
     
     self.encoder = nn.Sequential(
     #cnn and other layers

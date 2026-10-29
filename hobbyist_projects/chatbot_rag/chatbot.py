@@ -1,15 +1,6 @@
 #!/usr/bin/env python3
 """
-Local encrypted chatbot with optional RAG retrieval.
-
-Usage:
-  python chatbot.py                          # new chat, default model path
-  python chatbot.py NONE models/Llama-3.2-3B-Instruct-Q4_K_M.gguf
-  python chatbot.py history.bin models/Llama-3.2-3B-Instruct-Q4_K_M.gguf
-
-RAG:
-  Put .txt / .md files into the docs/ folder (next to this script).
-  RAG activates automatically when documents are present.
+Local encrypted chatbot with optional encrypted RAG retrieval.
 """
 
 from __future__ import annotations
@@ -21,16 +12,12 @@ import datetime
 import warnings
 from pathlib import Path
 
-# Keep terminal clean for portfolio demos
 warnings.filterwarnings("ignore")
 os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
 
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives import padding
 
-# ---------------------------------------------------------------------------
-# Encryption (original logic preserved; only noisy prints removed)
-# ---------------------------------------------------------------------------
 
 def encrypt(data: str, key: str):
     data_bytes = data.encode("utf-8")
@@ -54,12 +41,8 @@ def decrypt(encrypted_data: bytes, key: str, iv: bytes) -> str:
     return decrypted_data.decode("utf-8")
 
 
-# ---------------------------------------------------------------------------
-# RAG (optional, non-invasive)
-# ---------------------------------------------------------------------------
-
 def try_load_rag():
-    """Return a retrieval callable or None."""
+    """Return a secure retrieval callable or None."""
     try:
         from rag_utils import (
             load_documents_from_dir,
@@ -78,24 +61,31 @@ def try_load_rag():
         Path("docs"),
     ]
     docs_dir = next((p for p in candidates if p and p.is_dir()), None)
-
     if docs_dir is None:
-        print("[RAG] No docs/ folder found. Create one and drop .txt/.md files to enable RAG.")
         return None
 
     docs = load_documents_from_dir(str(docs_dir))
     if not docs:
-        print(f"[RAG] docs/ is empty ({docs_dir}). Add text files to enable retrieval.")
         return None
 
     fs_name = os.environ.get("RAG_FS_NAME", "rag_store")
     fs_path = script_dir / fs_name
-    print(f"[RAG] Found {len(docs)} document(s) in {docs_dir}")
+    
+    # Prompt user for secure store password if they want RAG encryption enabled
+    enc_key = os.environ.get("RAG_ENCRYPTION_KEY", None)
+    vec_enc = fs_path / f"{fs_name}_vector_db.enc"
+    vec_txt = fs_path / f"{fs_name}_vector_db.json"
+
+    if not vec_enc.exists() and not vec_txt.exists():
+        use_encrypt = input("[RAG] Encrypt this new vector store? (y/N): ").strip().lower() == 'y'
+        if use_encrypt:
+            enc_key = input("[RAG] Enter RAG store encryption passphrase: ").strip()
+        print("[RAG] Building secure index...")
+        corpus_to_filesystem(docs, name=str(fs_path), overwrite=False, encryption_key=enc_key)
+    elif vec_enc.exists() and not enc_key:
+        enc_key = input("[RAG] Store is encrypted. Enter decryption passphrase: ").strip()
 
     try:
-        if not (fs_path / f"{fs_name}_vector_db.json").exists():
-            print("[RAG] Building index (first run only)...")
-            corpus_to_filesystem(docs, name=str(fs_path), overwrite=False)
         embedder = get_embedder()
     except Exception as e:
         print(f"[RAG] Init failed: {e}")
@@ -103,31 +93,21 @@ def try_load_rag():
 
     def retrieve(query: str, top_k: int = 2) -> str:
         try:
-            hits = search_filesystem(str(fs_path), query, top_k=top_k, llm=embedder)
+            hits = search_filesystem(str(fs_path), query, top_k=top_k, llm=embedder, encryption_key=enc_key)
             if not hits:
                 return ""
             context = "\n---\n".join(f"[score={s:.3f}] {t[:500]}" for t, s in hits)
             return f"\n\n[RETRIEVED CONTEXT]\n{context}\n[END CONTEXT]\n"
         except Exception as e:
-            print(f"[RAG] Retrieval error: {e}")
+            print(f"[RAG] Retrieval decryption error: {e}")
             return ""
 
-    print("[RAG] Ready.")
+    print("[RAG] Secure retrieval ready.")
     return retrieve
 
 
-# ---------------------------------------------------------------------------
-# Main
-# ---------------------------------------------------------------------------
-
 SYSTEM_PROMPT = """SYSTEM:
-[You are a helpful assistant.
-
-The chat format consists of the following:
-USER: (message)
-ASSISTANT: (response)
-USER: (message)
-..... ]
+[You are a helpful secure assistant.]
 """
 
 
@@ -151,11 +131,8 @@ def main():
         try:
             with open(path, "rb") as f:
                 raw = f.read()
-            parts = raw.split(b"-8086v1-")
-            if len(parts) != 2:
-                raise ValueError("Invalid history file format")
-            iv, data = parts
-            key = input("Encryption key: ")
+            iv, data = raw.split(b"-8086v1-", 1)
+            key = input("Chat history encryption key: ")
             prompt = decrypt(data, key, iv)
             print("History loaded.")
         except Exception as e:
@@ -163,14 +140,12 @@ def main():
             path = None
             prompt = SYSTEM_PROMPT
     else:
-        print("Starting new conversation.")
+        print("Starting new secure conversation.")
 
     retrieve = try_load_rag()
 
     if not Path(llm_name).exists():
         print(f"\n[!] Model not found: {llm_name}")
-        print("    Set LLAMA_MODEL=/path/to/your.gguf or pass it as the 2nd argument.")
-        print("    Example: python chatbot.py NONE ~/models/Llama-3.2-3B-Instruct-Q4_K_M.gguf")
         sys.exit(1)
 
     print(f"Loading model: {llm_name}")
@@ -202,7 +177,6 @@ def main():
         prompt = prompt + reply + "\nUSER: "
         print(f"\nASSISTANT: {reply}\n")
 
-    # Save history quietly (no more dumping encrypted bytes to terminal)
     key = input("Encryption key to save history: ")
     out_path = path or f"chat_history_{datetime.date.today()}.bin"
     encrypted_data, iv = encrypt(prompt, key)

@@ -2,7 +2,9 @@
 
 Local chatbot powered by a small Llama GGUF, with **encrypted chat history** and optional **retrieval-augmented generation (RAG)**.
 
-Encryption matters because chat logs may live next to cloud-synced folders; treating them as plaintext is a bad default.
+Encryption matters because chat logs may be exposed to cloud; treating them as plaintext is a bad default.
+
+The idea is to demonstrate encrypted chat history and RAG; this is a preliminary demo 
 
 ## Requirements
 

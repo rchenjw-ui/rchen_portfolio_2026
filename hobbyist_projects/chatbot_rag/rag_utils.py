@@ -3,6 +3,7 @@ RAG utilities for the local chatbot.
 - Embeds documents with modernbert-embed-base (llama-cpp)
 - Stores on filesystem with SHA3 hashes
 - Simple cosine retrieval
+- Supports AES-256 encryption at rest and decryption during retrieval.
 """
 
 import os
@@ -18,9 +19,12 @@ try:
 except ImportError:
     Llama = None
 
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.hazmat.primitives import padding
+
 
 # ---------------------------------------------------------------------------
-# Hashing helpers
+# Hashing & Encryption helpers
 # ---------------------------------------------------------------------------
 
 def SHA3_256(text: str) -> bytes:
@@ -39,6 +43,30 @@ def hash_chunk(text: str) -> str:
     return hashed.replace("/", "|")
 
 
+def encrypt_text(text: str, key: str) -> tuple[bytes, bytes]:
+    """Encrypt plain text using AES-256-CBC with a SHA-256 derived key."""
+    data_bytes = text.encode("utf-8")
+    key_bytes = hashlib.sha256(key.encode()).digest()
+    iv = os.urandom(16)
+    cipher = Cipher(algorithms.AES(key_bytes), modes.CBC(iv))
+    padder = padding.PKCS7(128).padder()
+    padded_data = padder.update(data_bytes) + padder.finalize()
+    encryptor = cipher.encryptor()
+    encrypted_data = encryptor.update(padded_data) + encryptor.finalize()
+    return encrypted_data, iv
+
+
+def decrypt_text(encrypted_data: bytes, key: str, iv: bytes) -> str:
+    """Decrypt ciphertext bytes back to plain text."""
+    key_bytes = hashlib.sha256(key.encode()).digest()
+    cipher = Cipher(algorithms.AES(key_bytes), modes.CBC(iv))
+    decryptor = cipher.decryptor()
+    decrypted_data = decryptor.update(encrypted_data) + decryptor.finalize()
+    unpad = padding.PKCS7(128).unpadder()
+    decrypted_data = unpad.update(decrypted_data) + unpad.finalize()
+    return decrypted_data.decode("utf-8")
+
+
 # ---------------------------------------------------------------------------
 # Embedding
 # ---------------------------------------------------------------------------
@@ -46,14 +74,14 @@ def hash_chunk(text: str) -> str:
 _DEFAULT_EMBED_MODEL = "models/modernbert-embed-base-Q8_0.gguf"
 
 
-def get_embedder(model_path: Optional[str] = None) -> "Llama":
+def get_embedder(model_path: Optional[str] = None):
     if Llama is None:
         raise ImportError("llama-cpp-python is required for embeddings")
     path = model_path or _DEFAULT_EMBED_MODEL
     return Llama(model_path=path, embedding=True, verbose=False)
 
 
-def embed(text: str, llm: Optional["Llama"] = None) -> np.ndarray:
+def embed(text: str, llm: Optional["Llama"]= None):
     if llm is None:
         llm = get_embedder()
     emb = llm.create_embedding(text)
@@ -95,8 +123,9 @@ def corpus_to_filesystem(
     name: str = "default",
     llm: Optional["Llama"] = None,
     overwrite: bool = False,
+    encryption_key: Optional[str] = None,
 ) -> Tuple[Dict, Dict]:
-    """Write a corpus to a directory of hashed text files + vector JSON."""
+    """Write a corpus to a directory of hashed files + vector DB, optionally encrypted."""
     if llm is None:
         llm = get_embedder()
     vector_db, str_db = database_gen(corpus, llm)
@@ -108,10 +137,20 @@ def corpus_to_filesystem(
 
     root.mkdir(parents=True, exist_ok=True)
     for h, text in str_db.items():
-        (root / f"str_{h}.txt").write_text(text, encoding="utf-8")
+        file_path = root / f"str_{h}.enc" if encryption_key else root / f"str_{h}.txt"
+        if encryption_key:
+            enc_data, iv = encrypt_text(text, encryption_key)
+            file_path.write_bytes(iv + b"-8086v1-" + enc_data)
+        else:
+            file_path.write_text(text, encoding="utf-8")
 
-    with open(root / f"{name}_vector_db.json", "w", encoding="utf-8") as f:
-        json.dump(vector_db, f, indent=2)
+    vec_path = root / f"{name}_vector_db.enc" if encryption_key else root / f"{name}_vector_db.json"
+    vec_data = json.dumps(vector_db, indent=2)
+    if encryption_key:
+        enc_vec, iv = encrypt_text(vec_data, encryption_key)
+        vec_path.write_bytes(iv + b"-8086v1-" + enc_vec)
+    else:
+        vec_path.write_text(vec_data, encoding="utf-8")
 
     print(f"[RAG] Wrote {len(str_db)} chunks → {root}/")
     return vector_db, str_db
@@ -122,31 +161,55 @@ def search_filesystem(
     query: str,
     top_k: int = 3,
     llm: Optional["Llama"] = None,
+    encryption_key: Optional[str] = None,
 ) -> List[Tuple[str, float]]:
-    """Return list of (text, score) sorted by descending similarity."""
+    """Return list of (text, score) sorted by descending similarity, supporting encrypted stores."""
     if llm is None:
         llm = get_embedder()
 
     root = Path(filesystem)
-    vec_path = root / f"{filesystem}_vector_db.json"
-    if not vec_path.exists():
-        raise FileNotFoundError(f"No vector DB at {vec_path}")
+    vec_path_enc = root / f"{filesystem}_vector_db.enc"
+    vec_path_txt = root / f"{filesystem}_vector_db.json"
 
-    with open(vec_path, "r", encoding="utf-8") as f:
-        vector_db = json.load(f)
+    if vec_path_enc.exists():
+        if not encryption_key:
+            raise ValueError(f"Store '{filesystem}' is encrypted. An encryption key (--key) is required.")
+        raw_bytes = vec_path_enc.read_bytes()
+        iv, enc_data = raw_bytes.split(b"-8086v1-", 1)
+        json_str = decrypt_text(enc_data, encryption_key, iv)
+        vector_db = json.loads(json_str)
+    elif vec_path_txt.exists():
+        with open(vec_path_txt, "r", encoding="utf-8") as f:
+            vector_db = json.load(f)
+    else:
+        raise FileNotFoundError(f"No vector DB found at {root}")
 
     keys = list(vector_db.keys())
     vectors = np.array([vector_db[k] for k in keys], dtype=np.float32)
     q_vec = embed(query, llm=llm)
     sims = compute_cosine_similarities(q_vec, vectors)
 
-    # top-k
     idx = np.argsort(sims)[::-1][:top_k]
     results = []
+    
     for i in idx:
         h = keys[i]
-        text = (root / f"str_{h}.txt").read_text(encoding="utf-8")
+        enc_chunk_path = root / f"str_{h}.enc"
+        txt_chunk_path = root / f"str_{h}.txt"
+        
+        if enc_chunk_path.exists():
+            if not encryption_key:
+                raise ValueError(f"Chunk files are encrypted. Encryption key required.")
+            chunk_bytes = enc_chunk_path.read_bytes()
+            iv_c, data_c = chunk_bytes.split(b"-8086v1-", 1)
+            text = decrypt_text(data_c, encryption_key, iv_c)
+        elif txt_chunk_path.exists():
+            text = txt_chunk_path.read_text(encoding="utf-8")
+        else:
+            text = "(missing text file)"
+            
         results.append((text, float(sims[i])))
+        
     return results
 
 
@@ -160,11 +223,3 @@ def load_documents_from_dir(directory: str, extensions: Tuple[str, ...] = (".txt
             except Exception as e:
                 print(f"[RAG] Could not read {p}: {e}")
     return docs
-
-
-def help_rag():
-    print("Available RAG helpers:")
-    print("  corpus_to_filesystem(corpus, name='default')")
-    print("  search_filesystem(filesystem, query, top_k=3)")
-    print("  load_documents_from_dir(directory)")
-    print("  get_embedder() / embed(text)")
