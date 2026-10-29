@@ -1,6 +1,6 @@
 # Portfolio Code – Local ML Experiments
 
-Four self-contained projects cleaned up from a year of evening work.
+Self-contained projects cleaned up from a year of evening work.
 Intended to be readable, runnable on macOS (zsh + Apple Silicon) and Linux,
 and free of terminal spam.
 
