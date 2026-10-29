@@ -1,0 +1,20 @@
+Tox21 NR-AR experiment summary
+========================================
+split      method       pca     ROC-AUC   PR-AUC
+random     ecfp         False    0.7716   0.5727
+random     ecfp         True     0.7965   0.5657
+random     rdkit        False    0.8241   0.5855
+random     rdkit        True     0.8304   0.5575
+scaffold   ecfp         False    0.7475   0.3747
+scaffold   ecfp         True     0.7380   0.4391
+scaffold   rdkit        False    0.7445   0.4600
+scaffold   rdkit        True     0.7531   0.4076
+butina     ecfp         False    0.6176   0.1926
+butina     ecfp         True     0.6544   0.1899
+butina     rdkit        False    0.6234   0.2225
+butina     rdkit        True     0.6542   0.2050
+
+Notes:
+- pca=True means features reduced to 8 principal components
+- Class imbalance handled via oversampling + scale_pos_weight
+- PR-AUC is the primary metric under heavy imbalance
