@@ -16,10 +16,6 @@ Folders:
   Both train an equivalently sized network on MNIST. Because DBNs are trained layer-by-layer, a small probe model is also trained on each layer to measure how much label signal the unsupervised features capture. Modern Adam MLPs often win when labels are plentiful; that result is documented honestly.  
   → [hobbyist_projects/rbm_mnist/README.md](hobbyist_projects/rbm_mnist/README.md)
 
-- **homework** — Harvard CS50 AI problem sets.  
-  Search, knowledge-based agents, constraint satisfaction, Q-learning, probabilistic reasoning, intro deep learning. Also an early challenge in data structures/algorithms. All course unit tests passed.  
-  → [hobbyist_projects/homework/README.md](hobbyist_projects/homework/README.md)
-
 - **vae_demo** — Variational autoencoder on CIFAR-10.  
   Chronologically the first project: my first time implementing an ML algorithm end-to-end (conv encoder/decoder, reparameterization, KL + reconstruction).  
   → [hobbyist_projects/vae_demo/README.md](hobbyist_projects/vae_demo/README.md)
