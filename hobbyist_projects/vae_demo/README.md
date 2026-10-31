@@ -13,7 +13,7 @@ A demonstration of variational autoencoders on CIFAR-10, using convolutional neu
 # Learnings
 - The first architecture was far too small and under-trained — a direct reminder of the “bitter lesson.”
 - In addition, changing loss
-- Reparameterization: sampling \(z = \mu + \sigma \odot \varepsilon\) turns a non-differentiable draw into a differentiable path so gradients reach the encoder.
+- Reparameterization: sampling (z = mu + sigma * epsilon) turns a non-differentiable draw into a differentiable path so gradients reach the encoder.
 - Injecting noise forces the model to cover a distribution, not a single point estimate, which is what makes generation and interpolation possible.
 
 ## Requirements

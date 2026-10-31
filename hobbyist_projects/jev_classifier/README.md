@@ -1,6 +1,6 @@
 # jev_classifier
 
-Multi-label **email classifier** and **top-k coding-function ranker** using JEV-style / decision-model backends.
+Multi-label **email classifier** and **top-k coding-function ranker** using open-sourced JEV-style decision models, running on various AI inference backends on local machine.
 
 Two tasks share the same interface:
 

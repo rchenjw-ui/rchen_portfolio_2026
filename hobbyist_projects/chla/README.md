@@ -1,10 +1,10 @@
 NOTE: 
 
-The research code is shared with permission from my mentor at Children's Hospital Los Angeles. Two unpublished original research data files are not publicly available due to data-sharing restrictions 
+The research code is shared with permission from my mentor at Children's Hospital Los Angeles (CHLA). Two unpublished original research data files are not publicly available due to data-sharing restrictions 
 
 To demonstrate the computational workflow, this repository provides synthetic data that can be used to run the code. These demonstration inputs are not the original data, and their outputs should not be interpreted as reproducing or validating the study findings
 
-This is an older README.md and as such is relatively messy 
+This is the first README.md I wrote for this repo, and as such is not as clean as the others.
 
 BEFORE YOU USE:
 - Make sure you are running in Python! This is a Python program
