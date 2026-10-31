@@ -2,7 +2,7 @@
 
 First full ML algorithm implemented end-to-end in this portfolio: a **convolutional VAE** trained on CIFAR-10 (32×32 RGB).
 
-Encoder: strided conv stack → latent (z = mu + sigma * epsilon) (dim 128).  
+Encoder: strided conv stack → latent (mu, log(variance)) (dim 128).  
 Decoder: linear expand → conv-transpose stack → sigmoid RGB reconstruction.
 
 ## Learnings
@@ -41,7 +41,7 @@ python VAE_inference_demo.py
 
 This writes:
 
-- `img_3*_vae.jpg` — samples from a normal gaussian distribution through the decoder  
+- `img_3*_vae.jpg` — samples from \(\mathcal{N}(0,I)\) through the decoder  
 - `og_image_3*.jpg` / `VAE_IMAGE_3*.jpg` — original vs reconstruction pairs (when CIFAR samples are available in the runtime)
 
 If you do not have a GPU:
