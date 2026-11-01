@@ -13,13 +13,14 @@ Unsupervised (or self-supervised) pre-training still matters when labels are sca
 ## Requirements
 
 ```bash
-pip install torch numpy matplotlib pillow scikit-learn
+pip install torch datasets numpy matplotlib pillow scikit-learn
 # MNIST is loaded via the existing data_loaders (or torchvision if you adapt the loader)
 ```
 
 ## Run
 
 ```bash
+chmod +x run.sh
 ./run.sh
 # or
 python train.py --out results
