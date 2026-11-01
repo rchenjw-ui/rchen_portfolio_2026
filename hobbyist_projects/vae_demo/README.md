@@ -35,7 +35,7 @@ pip install datasets torch torchvision pillow numpy
 | `VAE_model.pt` | Trained weights |
 | `VAE_inference_demo.py` | Sample random latents + reconstruct a few CIFAR-style images |
 | `training_loop.py` | Training loop |
-| `training_loop.py` | Interpolates using VAE between two CIFAR-10 images |
+| `interpolation.py` | Interpolates using VAE between two CIFAR-10 images |
 
 ## Run inference
 
