@@ -33,8 +33,8 @@ img_a = torch.tensor(np.array(data[idx_a]["img"])).permute(2, 0, 1).float() / 25
 img_b = torch.tensor(np.array(data[idx_b]["img"])).permute(2, 0, 1).float() / 255.0
 
 # also save the originals
-Image.fromarray(np.array(data[idx_a]["img"])).save("interp_source_a.jpg")
-Image.fromarray(np.array(data[idx_b]["img"])).save("interp_source_b.jpg")
+Image.fromarray(np.array(data[idx_a]["img"])).save("images/interp_source_a.jpg")
+Image.fromarray(np.array(data[idx_b]["img"])).save("images/interp_source_b.jpg")
 
 img_a = img_a.unsqueeze(0).to(device)
 img_b = img_b.unsqueeze(0).to(device)
@@ -55,7 +55,7 @@ for i in range(10):
     out = out.squeeze(0).cpu()
     arr = np.array(out.permute(1, 2, 0) * 255).astype(np.uint8)
     image = Image.fromarray(arr)
-    image.save(f"interpolated_image_{i + 1}.jpg")
+    image.save(f"images/interpolated_image_{i + 1}.jpg")
     print(f"wrote interpolated_image_{i + 1}.jpg")
 
 print("done")
