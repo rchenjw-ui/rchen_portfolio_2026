@@ -144,7 +144,7 @@ def train_mlp(
     optim = torch.optim.Adam(model.parameters(), lr=1e-3)
     criterion = nn.CrossEntropyLoss()
     acc_hist = []
-
+    correct = total = 0   
     for ep in range(epochs):
         model.train()
         correct = total = 0
