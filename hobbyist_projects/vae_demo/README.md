@@ -65,7 +65,7 @@ python interpolation.py
 ```
 
 This writes the following to `images`:
-- `interpolated_image_*.jpg` - Interpolated image between two images (interp_source_a and interp_source_b) as a demonstration of VAE interpolation/generative capacity and smooth/coherent latent space
+- `interpolated_image_*.jpg` - Interpolated images between two images (interp_source_a and interp_source_b) as a demonstration of VAE interpolation/generative capacity and smooth/coherent latent space
 
 
 If you do not have a GPU:
