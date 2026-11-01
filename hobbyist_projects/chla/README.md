@@ -39,3 +39,16 @@ code:
 - matrices_for_use: due to some heavy NumPy data processing, had to separately generate .npy files
 - logistic_regression_test.py: trains and tests models on existing data
 - eval_given_saved.py: runs a model on an evaluation suite and synthetic data 
+
+How to run:
+
+```bash
+git install lfs
+git lfs pull
+
+python test_probe_gen.py #generates probe set
+python matrices_for_use.py #cleans data into .npy files for use by logistic regression; data cleaning took significant amounts of time
+python logistic_regression_test.py #trains standard scaler + logistic regression and saves weights to model_and_scaler_{num_probes}.json
+python eval_given_saved.py #evaluates performance of logistic regression on patient data
+# CUDA optional; CPU works for inference on the saved weights
+```
