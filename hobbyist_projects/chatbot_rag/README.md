@@ -9,7 +9,10 @@ The idea is to demonstrate encrypted chat history and RAG; this is a preliminary
 ## Requirements
 
 ```bash
-pip install llama-cpp-python cryptography numpy
+pip3 install llama-cpp-python cryptography numpy #install python packages
+brew install git-lfs #git-lfs is used for storing and downloading the attached large .GGUF models 
+git lfs install
+git lfs pull
 # GGUF models (examples):
 #   models/Llama-3.2-3B-Instruct-Q4_K_M.gguf          # chat
 #   models/modernbert-embed-base-Q8_0.gguf            # embeddings for RAG
@@ -19,13 +22,15 @@ pip install llama-cpp-python cryptography numpy
 
 ```bash
 # new chat, default model path (or set $LLAMA_MODEL)
+chmod +x run_chatbot.sh
 ./run_chatbot.sh
-
 # explicit model
 python chatbot.py NONE models/Llama-3.2-3B-Instruct-Q4_K_M.gguf
 
 # resume encrypted history
 python chatbot.py history.bin models/Llama-3.2-3B-Instruct-Q4_K_M.gguf
+
+#to end the chat: type END into the query section
 ```
 
 You will be prompted for a password. If you forget it, the history cannot be recovered and a new session starts.

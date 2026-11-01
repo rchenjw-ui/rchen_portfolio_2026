@@ -104,6 +104,7 @@ def classify_email_d1(text: str, base_url: str) -> Dict[str, float]:
         for lab in CLASS_LABELS
     }
     answers = score_d1_systemone(state, questions, base_url=base_url)
+    print(answers)
     out = {}
     for lab in CLASS_LABELS:
         a = answers.get(lab, {})
