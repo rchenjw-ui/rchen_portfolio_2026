@@ -1,6 +1,7 @@
 # cheminformatics
 
 Tox21 (NR-AR) activity prediction pipeline.  
+- NR-AR is an assessment of androgen receptor binding/toxicity; this is one of 12 toxicological metrics in Tox21 
 Compares **featurization methods** and **train/test split strategies**, with proper class imbalance handling. Metrics reported are ROC-AUC and PR-AUC.
 
 ## Main finding
@@ -22,6 +23,7 @@ pip install numpy pandas scikit-learn xgboost rdkit-pypi matplotlib
 ## Run
 
 ```bash
+chmod +x run.sh
 ./run.sh
 # or
 python train_eval.py --out results
