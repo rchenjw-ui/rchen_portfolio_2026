@@ -11,6 +11,10 @@ Chatbot usage guide:
         - Put .txt / .md files into the docs/ folder (next to this script).
         - RAG activates automatically when documents are present. 
 - If not:
+    - just type in: 
+    bash'''
+    bash run_chatbot.sh
+    '''
 
 RAG useage guide:
 - rag_cli.py is based on rag_utils.py
