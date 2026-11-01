@@ -47,7 +47,7 @@ python VAE_inference_demo.py
 This writes the following to `images`:
 
 - `img_3*_vae.jpg` — samples from N(0,I) (Gaussian distribution) through the decoder  
-- `og_image_3*.jpg` / `VAE_IMAGE_3*.jpg` — original vs reconstruction pairs (when CIFAR samples are available in the runtime)
+- `og_image_3*.jpg` / `VAE_IMAGE_3*.jpg` — original vs reconstruction pairs (reconstructed should resemble original)
 
 If you do not have a GPU:
 
@@ -65,7 +65,7 @@ python interpolation.py
 ```
 
 This writes the following to `images`:
-- `interpolated_image_*.jpg` - Interpolated image between two images (demonstration of VAE interpolation/generative capacity and smooth/coherent latent space)
+- `interpolated_image_*.jpg` - Interpolated image between two images (interp_source_a and interp_source_b) as a demonstration of VAE interpolation/generative capacity and smooth/coherent latent space
 
 
 If you do not have a GPU:
