@@ -12,7 +12,7 @@ Two tasks share the same interface:
 | Backend     | Notes |
 |-------------|--------|
 | `d1`        | LiquidAI/d1-3B-GGUF via `llama-server` `/v1/systemone` (true decision model; recommended on Mac / CPU) |
-| `pytorch`   | Original OpenJEV-style transformers weights (CUDA preferred; MPS often painful with bitsandbytes) |
+| `pytorch`   | Original AlexWortega/OpenJev (qwen3.5-0.8b-nli-v2s-long) transformers weights (CUDA preferred; MPS often painful with bitsandbytes) |
 | `llama_cpp` | Prompt-based instruct GGUF fallback |
 
 ## Requirements
@@ -39,9 +39,11 @@ pip install torch transformers
 
 # 2) run demos
 ./run.sh
-python classifier.py --backend d1 --demo both
-python classifier.py --backend auto --demo interactive
-python classifier.py --backend llama_cpp --demo email
+python3 classifier.py --backend d1 --demo both
+python3 classifier.py --backend auto --demo interactive
+python3 classifier.py --backend pytorch --demo both
+python3 classifier.py --backend llama_cpp --demo both          # auto-download
+python3 classifier.py --backend llama_cpp --gguf /path/to.gguf # explicit
 ```
 
 `--demo` options: `email`, `coding`, `both`, `interactive`.

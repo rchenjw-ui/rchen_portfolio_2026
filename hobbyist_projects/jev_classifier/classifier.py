@@ -49,7 +49,7 @@ RULES = """
 - is_legitimate_call_to_action: A clear, honest request for a specific action that is relevant and non-deceptive.
 - is_college_related: Content about university/college life, admissions, courses, campus events, deadlines.
 - is_work_related: Professional or job-related content: meetings, projects, deadlines, workplace communication.
-- is_promo: Transparent marketing or promotional content (distinct from pure spam).
+- is_promo: Transparent marketing or promotional content (distinct from pure spam), as opposed to call to action and/or work-related.
 Priority: is_college_related > is_spam > is_promo > is_legitimate_call_to_action > other labels.
 """
 
@@ -94,7 +94,7 @@ def score_d1_systemone(
     return body.get("answers", body)
 
 
-def classify_email_d1(text: str, base_url: str) -> Dict[str, float]:
+def classify_email_d1(text: str, base_url: str) -> Dict[str, float]: #resolved silent-fail and bad json parse
     state = f"Rules:\n{RULES}\n\nMessage:\n{text}"
     questions = {
         lab: {
@@ -104,13 +104,14 @@ def classify_email_d1(text: str, base_url: str) -> Dict[str, float]:
         for lab in CLASS_LABELS
     }
     answers = score_d1_systemone(state, questions, base_url=base_url)
-    print(answers)
     out = {}
+
+    #test
     for lab in CLASS_LABELS:
         a = answers.get(lab, {})
         # noul returns probability of "yes" under various possible keys
         if isinstance(a, dict):
-            p = a.get("probability", a.get("p", a.get("yes", a.get("true", 0.5))))
+            p = a.get("noul", a.get("p", a.get("yes", a.get("true", 0.5))))
             if isinstance(p, dict):
                 p = p.get("true", p.get("yes", 0.5))
             out[lab] = float(p)
@@ -119,7 +120,7 @@ def classify_email_d1(text: str, base_url: str) -> Dict[str, float]:
     return out
 
 
-def rank_functions_d1(project_brief: str, base_url: str, top_k: int = 6):
+def rank_functions_d1(project_brief: str, base_url: str, top_k: int = 6): #resolved similar parse error
     catalog = get_function_catalog_text()
     state = (
         f"Project brief: {project_brief}\n\n"
@@ -141,7 +142,7 @@ def rank_functions_d1(project_brief: str, base_url: str, top_k: int = 6):
     for f in CODING_FUNCTIONS:
         a = answers.get(f["name"], {})
         if isinstance(a, dict):
-            p = a.get("probability", a.get("p", a.get("yes", a.get("true", 0.0))))
+            p = a.get("noul", a.get("p", a.get("yes", a.get("true", 0.0))))
             if isinstance(p, dict):
                 p = p.get("true", p.get("yes", 0.0))
             scored.append((f["name"], float(p)))
@@ -174,7 +175,7 @@ def check_d1_server(base_url: str = "http://127.0.0.1:8080") -> bool:
 # PyTorch OpenJEV backend (original)
 # ---------------------------------------------------------------------------
 
-def load_pytorch(subfolder: str = "qwen3.5-4b-nli-v5", quantize: bool = True):
+def load_pytorch(subfolder: str = "qwen3.5-0.8b-nli-v2s-long", quantize: bool = True):
     import torch
     from transformers import AutoModelForSequenceClassification, AutoTokenizer, BitsAndBytesConfig
 
@@ -229,6 +230,42 @@ def score_pytorch(tok, model, premise: str, hypotheses: List[str]) -> Dict[str, 
 # Legacy prompt-based llama.cpp fallback (only if d1 server unavailable)
 # ---------------------------------------------------------------------------
 
+DEFAULT_GGUF_NAME = "Qwen3.5-0.8B-Q4_K_M.gguf"
+DEFAULT_GGUF_URL = (
+    "https://huggingface.co/unsloth/Qwen3.5-0.8B-GGUF/resolve/main/"
+    "Qwen3.5-0.8B-Q4_K_M.gguf"
+)
+
+
+def _ensure_default_gguf(dest_dir: Optional[Path] = None) -> Path:
+    """Download Qwen3.5-0.8B-Q4_K_M.gguf once into models/ next to this script."""
+    root = Path(__file__).resolve().parent
+    dest_dir = dest_dir or (root / "models")
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    path = dest_dir / DEFAULT_GGUF_NAME
+    if path.is_file() and path.stat().st_size > 1_000_000:
+        print(f"[llama_cpp] using cached {path}")
+        return path
+
+    print(f"[llama_cpp] downloading {DEFAULT_GGUF_NAME} (~0.5 GB) ...")
+    print(f"            {DEFAULT_GGUF_URL}")
+    try:
+        from urllib.request import urlretrieve
+
+        tmp = path.with_suffix(".gguf.partial")
+        urlretrieve(DEFAULT_GGUF_URL, tmp)
+        tmp.replace(path)
+    except Exception as e:
+        print(f"[llama_cpp] download failed: {e}", file=sys.stderr)
+        print(
+            "Pass --gguf /path/to/model.gguf or install d1 / d1_hf instead.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+    print(f"[llama_cpp] saved → {path}")
+    return path
+
+
 def load_llama_cpp_fallback(model_path: Optional[str] = None):
     try:
         from llama_cpp import Llama
@@ -236,31 +273,62 @@ def load_llama_cpp_fallback(model_path: Optional[str] = None):
         print("[llama_cpp] Install: pip install llama-cpp-python")
         sys.exit(1)
     if model_path is None:
-        print(
-            "[llama_cpp] No GGUF given and d1 server not running.\n"
-            "Prefer starting d1:\n"
-            "  llama-server -hf LiquidAI/d1-3B-GGUF:Q4_K_M --port 8080\n"
-            "Or pass --gguf /path/to/instruct.gguf for the legacy fallback."
-        )
-        sys.exit(1)
+        model_path = str(_ensure_default_gguf())
     print(f"[backend] Legacy llama.cpp instruct: {model_path}")
-    llm = Llama(model_path=model_path, n_ctx=2048, verbose=False, n_gpu_layers=-1)
+    # enable_thinking=False is not always honored on raw completion();
+    # score_llama_cpp_prompt also pre-closes <think> in the prompt.
+    try:
+        llm = Llama(
+            model_path=model_path,
+            n_ctx=2048,
+            verbose=False,
+            n_gpu_layers=-1,
+            chat_template_kwargs={"enable_thinking": False},
+        )
+    except TypeError:
+        llm = Llama(model_path=model_path, n_ctx=2048, verbose=False, n_gpu_layers=-1)
     return llm
+
+
+def _strip_qwen_think(text: str) -> str:
+    """Remove Qwen3.5 <think>...</think> (or unclosed) blocks."""
+    import re
+    text = re.sub(r"<think>[\s\S]*?</think>", "", text, flags=re.IGNORECASE)
+    text = re.sub(r"<think>[\s\S]*", "", text, flags=re.IGNORECASE)
+    text = re.sub(r"</think>", "", text, flags=re.IGNORECASE)
+    return text.strip()
 
 
 def score_llama_cpp_prompt(llm, premise: str, hypotheses: List[str]) -> Dict[str, float]:
     scores = {}
     for h in hypotheses:
+        # Pre-close think so Qwen3.5 does not open a long reasoning block.
         prompt = (
-            f"<|im_start|>system\nAnswer only YES or NO.<|im_end|>\n"
+            f"<|im_start|>system\n"
+            f"You are an expert at Natural Language Inference (NLI) and Zero-Shot Classification. Answer with only YES, MAYBE, or NO. YES is for very high certainty, MAYBE is for medium, NO is for low. No reasoning. No think blocks.\n"
+            f"<|im_end|>\n"
             f"<|im_start|>user\nPremise:\n{premise[:700]}\n\n"
-            f"Hypothesis: {h}\nEntailed? YES or NO.<|im_end|>\n"
+            f"Hypothesis: {h}\nEntailed? Reply with most likely.<|im_end|>\n"
             f"<|im_start|>assistant\n"
+            f"<think>\n</think>\n"
+        ) #limited granularity = limited ranking and performance
+        out = llm(
+            prompt,
+            max_tokens=16,
+            temperature=0.0,
+            stop=["<|im_end|>", "<think>"],
         )
-        out = llm(prompt, max_tokens=3, temperature=0.0, stop=["<|im_end|>", "\n"])
-        text = out["choices"][0]["text"].strip().upper()
-        scores[h] = 0.85 if text.startswith("YES") else (0.15 if text.startswith("NO") else 0.4)
+        text = _strip_qwen_think(out["choices"][0]["text"]).strip().upper()
+        if text.startswith("YES") or "YES" in text.split()[:3]:
+            scores[h] = 0.85
+        elif text.startswith("MAYBE") or "NO" in text.split()[:3]:
+            scores[h] = 0.5
+        elif text.startswith("NO") or "NO" in text.split()[:3]:
+            scores[h] = 0.15
+        else:
+            scores[h] = 0.4
     return scores
+
 
 
 # ---------------------------------------------------------------------------
