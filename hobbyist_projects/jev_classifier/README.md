@@ -7,6 +7,9 @@ Two tasks share the same interface:
 1. **Email** — labels such as `is_spam`, `is_science_related`, `is_legitimate_call_to_action`, …
 2. **Coding project** — given a short project brief, rank which library functions are most relevant (from a small catalog).
 
+**Email**: Shows email text, top 3 predicted classes, and class probabilities
+**Coding**: Shows project description, top 5 predicted functions, function probabilities, and Y next to ones that matched the reference "needed" functions 
+
 ## Backends (preference order when `--backend auto`)
 
 | Backend     | Notes |
@@ -14,6 +17,8 @@ Two tasks share the same interface:
 | `d1`        | LiquidAI/d1-3B-GGUF via `llama-server` `/v1/systemone` (true decision model; recommended on Mac / CPU) |
 | `pytorch`   | Original AlexWortega/OpenJev (qwen3.5-0.8b-nli-v2s-long) transformers weights (CUDA preferred; MPS often painful with bitsandbytes) |
 | `llama_cpp` | Prompt-based instruct GGUF fallback |
+
+Note: `./start_d1_server.sh` is necessary as the reference implementation for System One-type decision models uses the llama.cpp server, not the python API. 
 
 ## Requirements
 
@@ -29,17 +34,22 @@ pip install torch transformers
 # bitsandbytes only if you are on CUDA and want the original quant path
 ```
 
+
 ## Run
 
 ```bash
-# 1) (optional but recommended) start the d1 server in another terminal
-./start_d1_server.sh
+# 1) (optional but recommended) start the d1 server once in another terminal
+chmod +x ./start_d1_server.sh
+./start_d1_server.sh #runs LiquidAI/d1-3B-GGUF on llama-server
 # or manually:
 #   llama-server -hf LiquidAI/d1-3B-GGUF:Q4_K_M --port 8080
 
 # 2) run demos
-./run.sh
-python3 classifier.py --backend d1 --demo both
+chmod +x ./run.sh
+./run.sh #- runs python3 classifier.py --backend d1 --demo both --out results
+
+#OR you can run one of the following, one by one: 
+python3 classifier.py --backend d1 --demo both #uses llama-server to directly run d1-3B-GGUF
 python3 classifier.py --backend auto --demo interactive
 python3 classifier.py --backend pytorch --demo both
 python3 classifier.py --backend llama_cpp --demo both          # auto-download

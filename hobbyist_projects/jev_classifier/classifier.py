@@ -403,6 +403,7 @@ def demo_functions(backend, handle, d1_url, out_lines: list):
             line = f"  [{mark}] {name:35s}  {score:.3f}"
             print(line)
             out_lines.append(line)
+        print(f"Reference Functions Used: {proj["needed"]}")
 
 
 def interactive(backend, handle, d1_url):
