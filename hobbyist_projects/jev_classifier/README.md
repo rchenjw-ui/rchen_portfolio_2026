@@ -16,7 +16,7 @@ Two tasks share the same interface:
 | Backend     | Notes |
 |-------------|--------|
 | `d1`        | LiquidAI/d1-3B-GGUF via `llama-server` `/v1/systemone` (true decision model; recommended on Mac / CPU) |
-| `pytorch`   | Original AlexWortega/OpenJev (qwen3.5-0.8b-nli-v2s-long) transformers weights (CUDA preferred; MPS often painful with bitsandbytes) |
+| `pytorch`   | Original AlexWortega/OpenJev (qwen3.5-0.8b-nli-v2s-long/qwen3.5-4b-nli-v5) transformers weights (CUDA preferred; MPS often painful with bitsandbytes) |
 | `llama_cpp` | Prompt-based instruct GGUF fallback |
 
 Note: `./start_d1_server.sh` is necessary as the reference implementation for System One-type decision models uses the llama.cpp server, not the python API. 
