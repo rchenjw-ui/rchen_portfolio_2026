@@ -9,7 +9,7 @@ Two tasks share the same interface:
 
 Expected outputs for each demo: 
 **Email**: Shows email text, top 3 predicted classes, and class probabilities
-**Coding**: Shows project description, top 5 predicted functions, function probabilities, and Y next to ones that matched the reference "needed" functions 
+**Coding**: Shows project description, top 5 predicted functions, function probabilities, and [Y] next to ones that matched the reference "needed" functions 
 
 ## Backends (preference order when `--backend auto`)
 
