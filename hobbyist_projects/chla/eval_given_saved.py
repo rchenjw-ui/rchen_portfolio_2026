@@ -37,8 +37,8 @@ def display_preds(preds, name):
     plt.bar(samples.keys(), preds, color=["#00bfff", "#00bfff", "#ffe600", "#ffe600","#00bfff","#00bfff", "#ffe600", "#ffe600","#c96eac","#c96eac","#c96eac"])
     plt.ylabel(f"Predicted Tumor Fraction - {name}")
     plt.title(f"Predicted Tumor Fraction for Each Sample - {name}")  
+    plt.savefig(f"results/predicted_tumor_fraction_barplot_{name}.png")
     plt.show()
-    plt.savefig(f"predicted_tumor_fraction_barplot_{name}.png")
     plt.close()
 
 #lin's CCC: used to see how closely matched to real across synthetic
@@ -153,13 +153,9 @@ with open("pilot_8samples_merged-s.csv", 'r') as file:
                     samples[labels[j]] = [float(line[j])]
 
 samples["IDAT_23"] = load_patient_idat(path="methyl_data/sample_23/205648300012_R01C01_Red.idat", probes = probes)
-print("passed")
 samples["IDAT_24"] = load_patient_idat(path='methyl_data/sample_24/205648300012_R03C01_Red.idat', probes = probes)
 samples["IDAT_25"] = load_patient_idat(path="methyl_data/sample_25/205648300012_R04C01_Red.idat", probes = probes)
 
-for i in samples:
-    print(i)
-    print(len(samples[i]))
 
 """
 below is evaluation code across the samples, plus gap between cancer and wt
@@ -177,7 +173,7 @@ display_preds(preds, f"logistic regression results")
 """
 below is synthetic eval code for both
 """
-
+print("\n")
 print("First eval on average RB, then beta of target ")
 
 #use samples
@@ -210,5 +206,6 @@ for name in ["IDAT_23", "IDAT_24", "IDAT_25"]:
     ax.set_ylabel('predicted tfx')
 
     fig.show()
+    plt.savefig(f"results/sample_{name}_prediction_vs_synthetic_tfx.png")
     plt.show()
     print("\n")

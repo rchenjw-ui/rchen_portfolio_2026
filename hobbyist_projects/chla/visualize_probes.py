@@ -115,7 +115,7 @@ def generate_ref_probes(name):
     column_list = [x for x in column_list if x in probes]
     return column_list
 
-def plot_probe_betas_heatmap(probe_list, rb_beta_df, retina_beta_df, filename="top_bottom_heatmap.jpg"):
+def plot_probe_betas_heatmap(probe_list, rb_beta_df, retina_beta_df, filename="results/top_bottom_heatmap.jpg"):
    """
    Plot a heatmap for the provided probes showing beta values for RB (left) and WT (right) samples.
    Args:

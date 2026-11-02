@@ -1,4 +1,4 @@
-from hobbyist_projects.chla.data_extraction import rdata_to_dataframe, extract_beta_columns, load_signals
+from data_extraction import rdata_to_dataframe, extract_beta_columns, load_signals
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt

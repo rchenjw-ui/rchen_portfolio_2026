@@ -42,12 +42,17 @@ code:
 
 How to run:
 
+NOTE: 
+- rpy2 (used for parsing .RDATA) requires R on your system, as well as Python
+- to install R, install via apt install `sudo apt install r` or homebrew `brew install r`
+ 
 ```bash
+pip3 install rpy2 mepylome scikit-learn numpy  #you need R extension in VSCODE to use rpy2
 git install lfs
 git lfs pull
 
 python3 test_probe_gen.py #generates probe set
-python3 matrices_for_use.py #cleans data into .npy files for use by logistic regression; data cleaning took significant amounts of time
+python3 matrices_for_use.py #cleans data into .npy files for use by logistic regression; data cleaning previoustook significant amounts of time
 python3 logistic_regression_test.py #trains standard scaler + logistic regression and saves weights to model_and_scaler_{num_probes}.json
 python3 eval_given_saved.py #evaluates performance of logistic regression on patient data
 # CUDA optional; CPU works for inference on the saved weights

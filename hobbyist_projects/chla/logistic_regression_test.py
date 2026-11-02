@@ -18,7 +18,7 @@ def graph_metrics(results,name):
     ax.set_title(f'{name} - metrics')
     ax.set_xlabel("Metrics")
     ax.set_ylabel('Count')
-
+    plt.savefig(f'results/logistic_regression_{name}_probes_metrics.png')
     plt.show()
 
 def display_preds(preds, name):
@@ -26,8 +26,8 @@ def display_preds(preds, name):
     plt.bar(samples.keys(), preds, color=["#00bfff", "#00bfff", "#ffe600", "#ffe600","#00bfff", "#00bfff", "#ffe600", "#ffe600"])
     plt.ylabel(f"Predicted Tumor Fraction - {name}")
     plt.title(f"Predicted Tumor Fraction for Each Sample - {name}")  
+    plt.savefig(f"results/predicted_tumor_fraction_barplot_{name}.png")
     plt.show()
-    plt.savefig(f"predicted_tumor_fraction_barplot_{name}.png")
     plt.close()
 
 
@@ -122,6 +122,7 @@ for name in range(1,11,2):
     m, b = np.polyfit(beta_vals, coef[0], 1)  # Calculate slope and intercept
     plt.plot(beta_vals, m*beta_vals + b, color='green', label=f'Trendline (y={m:.2f}x+{b:.2f})')
     plt.legend()
+    plt.savefig(f"results/Coefficients_Model_vs_Beta_{name*50}.png")
     plt.show()
 
 
