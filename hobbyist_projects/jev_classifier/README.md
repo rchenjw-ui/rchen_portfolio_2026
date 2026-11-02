@@ -53,7 +53,7 @@ chmod +x ./run.sh
 python3 classifier.py --backend d1 --demo both #uses llama-server to directly run d1-3B-GGUF
 python3 classifier.py --backend auto --demo interactive
 python3 classifier.py --backend pytorch --demo both
-python3 classifier.py --backend llama_cpp --demo both          # auto-download
+python3 classifier.py --backend llama_cpp --demo both          # auto-download, uses llama-cpp-python 
 python3 classifier.py --backend llama_cpp --gguf /path/to.gguf # explicit
 ```
 
