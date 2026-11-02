@@ -31,7 +31,7 @@ pip install numpy
 # install llama.cpp and llama-server, or use a prebuilt binary
 
 # for pytorch path
-pip install torch transformers
+pip install torch transformers accelerate
 # bitsandbytes only if you are on CUDA and want the original quant path
 ```
 
