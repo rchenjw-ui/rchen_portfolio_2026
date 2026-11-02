@@ -41,7 +41,7 @@ pip install datasets torch torchvision pillow numpy
 
 ```bash
 cd vae_demo
-python VAE_inference_demo.py
+python3 VAE_inference_demo.py
 ```
 
 This writes the following to `images`:
@@ -61,7 +61,7 @@ export CUDA_VISIBLE_DEVICES=""
 
 ```bash
 cd vae_demo
-python interpolation.py
+python3 interpolation.py
 ```
 
 This writes the following to `images`:

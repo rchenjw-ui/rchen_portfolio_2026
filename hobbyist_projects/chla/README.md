@@ -46,9 +46,9 @@ How to run:
 git install lfs
 git lfs pull
 
-python test_probe_gen.py #generates probe set
-python matrices_for_use.py #cleans data into .npy files for use by logistic regression; data cleaning took significant amounts of time
-python logistic_regression_test.py #trains standard scaler + logistic regression and saves weights to model_and_scaler_{num_probes}.json
-python eval_given_saved.py #evaluates performance of logistic regression on patient data
+python3 test_probe_gen.py #generates probe set
+python3 matrices_for_use.py #cleans data into .npy files for use by logistic regression; data cleaning took significant amounts of time
+python3 logistic_regression_test.py #trains standard scaler + logistic regression and saves weights to model_and_scaler_{num_probes}.json
+python3 eval_given_saved.py #evaluates performance of logistic regression on patient data
 # CUDA optional; CPU works for inference on the saved weights
 ```

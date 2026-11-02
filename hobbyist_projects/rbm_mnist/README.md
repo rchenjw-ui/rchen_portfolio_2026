@@ -23,7 +23,7 @@ pip install torch datasets numpy matplotlib pillow scikit-learn
 chmod +x run.sh
 ./run.sh
 # or
-python train.py --out results
+python3 train.py --out results
 ```
 
 Outputs under `results/`:

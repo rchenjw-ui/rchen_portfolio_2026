@@ -26,10 +26,10 @@ pip install numpy pandas scikit-learn xgboost rdkit matplotlib
 chmod +x run.sh
 ./run.sh
 # or
-python train_eval.py --out results
+python3 train_eval.py --out results
 
 # with MolDeBERTa embeddings (slower, needs GPU/MPS-friendly transformers)
-python train_eval.py --use-moldeberta --out results_bert
+python3 train_eval.py --use-moldeberta --out results_bert
 ```
 
 Results land in `results/` (or the directory you pass to `--out`):

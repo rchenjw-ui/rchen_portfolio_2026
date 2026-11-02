@@ -12,5 +12,5 @@ python3 classifier.py --backend d1 --demo both --out results
 
 echo ""
 echo "Other options:"
-echo "  python classifier.py --backend auto --demo interactive"
-echo "  python classifier.py --backend pytorch --demo both   # needs CUDA ideally"
+echo "  python3 classifier.py --backend auto --demo interactive"
+echo "  python3 classifier.py --backend pytorch --demo both   # needs CUDA ideally"

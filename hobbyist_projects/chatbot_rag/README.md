@@ -25,10 +25,10 @@ git lfs pull
 chmod +x run_chatbot.sh
 ./run_chatbot.sh
 # explicit model
-python chatbot.py NONE models/Llama-3.2-3B-Instruct-Q4_K_M.gguf
+python3 chatbot.py NONE models/Llama-3.2-3B-Instruct-Q4_K_M.gguf
 
 # resume encrypted history
-python chatbot.py history.bin models/Llama-3.2-3B-Instruct-Q4_K_M.gguf
+python3 chatbot.py history.bin models/Llama-3.2-3B-Instruct-Q4_K_M.gguf
 
 #to end the chat: type END into the query section
 ```
@@ -53,11 +53,11 @@ export RAG_FS_NAME=my_store
 Manage the same store without starting a chat:
 
 ```bash
-python rag_cli.py index --docs docs --store rag_store
-python rag_cli.py search "how does the encryption work?" --top-k 3
-python rag_cli.py add docs/extra.md --store rag_store
-python rag_cli.py list --store rag_store
-python rag_cli.py info --store rag_store
+python3 rag_cli.py index --docs docs --store rag_store
+python3 rag_cli.py search "how does the encryption work?" --top-k 3
+python3 rag_cli.py add docs/extra.md --store rag_store
+python3 rag_cli.py list --store rag_store
+python3 rag_cli.py info --store rag_store
 ```
 
 Full details: [RAG_CLI.md](RAG_CLI.md).
