@@ -7,9 +7,9 @@ Two tasks share the same interface:
 1. **Email** — labels such as `is_spam`, `is_science_related`, `is_legitimate_call_to_action`, …
 2. **Coding project** — given a short project brief, rank which library functions are most relevant (from a small catalog).
 
-Expected outputs for each demo: 
-**Email**: Shows email text, top 3 predicted classes, and class probabilities
-**Coding**: Shows project description, top 5 predicted functions, function probabilities, and [Y] next to ones that matched the reference "needed" functions 
+## Expected outputs for each demo
+1. **Email**: Shows email text, top 3 predicted classes, and class probabilities
+2. **Coding**: Shows project description, top 5 predicted functions, function probabilities, and [Y] next to ones that matched the reference "needed" functions 
 
 ## Backends (preference order when `--backend auto`)
 
